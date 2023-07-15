@@ -1,4 +1,4 @@
-# chaeacters_api
+# characters_api
 
 ### How run?
 
