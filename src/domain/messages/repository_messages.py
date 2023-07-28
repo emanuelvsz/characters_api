@@ -1,0 +1,6 @@
+ERROR_DB_CONNECTION = "Erro ao conectar ao banco de dados"
+ERROR_CHARACTER_NOT_FOUND = "Personagem nao encontrado"
+ERROR_DB_SELECT = "Erro ao buscar dados no banco de dados"
+ERROR_DB_INSERT = "Erro ao inserir dados no banco de dados"
+ERROR_DB_UPDATE = "Erro ao atualizar dados no banco de dados"
+ERROR_DB_DELETE = "Erro ao excluir dados do banco de dados"
