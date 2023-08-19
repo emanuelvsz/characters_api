@@ -2,6 +2,7 @@ from flask import jsonify, request
 from src.infra.mock.characters import characters
 from src.domain.messages.repository_messages import *
 import psycopg2
+import uuid
 
 def get_db_connection():
     try:
@@ -46,13 +47,14 @@ def getCharacters():
 
 
 def getCharacterByID(id):
+    id = uuid.UUID(id)
     try:
         connection = get_db_connection()
         if not connection:
             return jsonify({"error": ERROR_DB_CONNECTION})
 
         cursor = connection.cursor()
-        cursor.execute("SELECT id, name, from_where FROM characters WHERE id = %s", (id,))
+        cursor.execute("SELECT id, name, from_where FROM characters WHERE id = %s", (str(id),))
         row = cursor.fetchone()
 
         if row:
@@ -83,10 +85,9 @@ def createCharacter():
             return jsonify({"error": ERROR_DB_CONNECTION})
 
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO characters (name, from_where) VALUES (%s, %s)", (name, from_where))
+        cursor.execute("INSERT INTO characters (name, from_where) VALUES (%s, %s) RETURNING id", (name, from_where))
+        new_character_id = cursor.fetchone()[0]
         connection.commit()
-
-        new_character_id = cursor.lastrowid
 
         cursor.close()
         connection.close()
@@ -102,22 +103,24 @@ def createCharacter():
     except Exception as e:
         return jsonify({"error": ERROR_DB_INSERT, "details": str(e)})
 
-
 def editCharacter():
-    id = request.json.get('id')
+    id_str = request.json.get('id')
     name = request.json.get('name')
     from_where = request.json.get('from_where')
 
-    if id is None:
+    if id_str is None:
         return jsonify({'error': 'Missing character ID'})
 
     try:
+        id = uuid.UUID(id_str)  # Converta a string UUID para um objeto UUID
+        id_str = str(id)  # Converta o UUID de volta para uma string
+
         connection = get_db_connection()
         if not connection:
             return jsonify({"error": ERROR_DB_CONNECTION})
 
         cursor = connection.cursor()
-        cursor.execute("SELECT id, name, from_where FROM characters WHERE id = %s", (id,))
+        cursor.execute("SELECT id, name, from_where FROM characters WHERE id = UUID(%s)", (id_str,))
         row = cursor.fetchone()
 
         if row:
@@ -126,12 +129,12 @@ def editCharacter():
             if not from_where:
                 from_where = row[2]
 
-            cursor.execute("UPDATE characters SET name = %s, from_where = %s WHERE id = %s",
-                           (name, from_where, id))
+            cursor.execute("UPDATE characters SET name = %s, from_where = %s WHERE id = UUID(%s)",
+                           (name, from_where, id_str))
             connection.commit()
 
             updated_character = {
-                'id': id,
+                'id': str(id),  # Converta o objeto UUID de volta para uma string
                 'name': name,
                 'from_where': from_where
             }
@@ -149,16 +152,18 @@ def editCharacter():
 
 def deleteCharacter(id):
     try:
+        id_str = str(id)  # Converte o UUID para uma string
+
         connection = get_db_connection()
         if not connection:
             return jsonify({"error": ERROR_DB_CONNECTION})
 
         cursor = connection.cursor()
-        cursor.execute("SELECT id, name, from_where FROM characters WHERE id = %s", (id,))
+        cursor.execute("SELECT id, name, from_where FROM characters WHERE id = UUID(%s)", (id_str,))
         row = cursor.fetchone()
 
         if row:
-            cursor.execute("DELETE FROM characters WHERE id = %s", (id,))
+            cursor.execute("DELETE FROM characters WHERE id = UUID(%s)", (id_str,))
             connection.commit()
             return jsonify({'message': 'Character deleted successfully'})
 
@@ -171,4 +176,3 @@ def deleteCharacter(id):
     finally:
         cursor.close()
         connection.close()
-

@@ -1,3 +1,4 @@
+import uuid
 from flask import Flask
 from src.infra.controllers.controllers import getCharacters, getCharacterByID, createCharacter, editCharacter, deleteCharacter
 
@@ -7,7 +8,7 @@ app = Flask(__name__)
 def handleGetCharacters():
     return getCharacters()
 
-@app.route('/characters/<int:id>', methods=['GET'])
+@app.route('/characters/<string:id>', methods=['GET'])
 def handleGetCharacterByID(id):
     return getCharacterByID(id)
 
@@ -19,7 +20,7 @@ def handleCreateCharacter():
 def handleEditCharacter():
     return editCharacter()
 
-@app.route('/characters/rm/<int:id>', methods=['DELETE'])
+@app.route('/characters/rm/<string:id>', methods=['DELETE'])
 def handleDeleteCharacter(id):
     return deleteCharacter(id)
 
