@@ -1,8 +1,9 @@
-import uuid
 from flask import Flask
+from flask_cors import CORS
 from src.infra.controllers.controllers import getCharacters, getCharacterByID, createCharacter, editCharacter, deleteCharacter
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/characters', methods=['GET'])
 def handleGetCharacters():
