@@ -24,8 +24,13 @@ def getCharacters():
         if not connection:
             return jsonify({"error": ERROR_DB_CONNECTION})
 
+        page = int(request.args.get('page', 1))
+        limit = int(request.args.get('limit', 10))
+
+        offset = (page - 1) * limit
+
         cursor = connection.cursor()
-        cursor.execute("SELECT id, name, from_where FROM characters")
+        cursor.execute("SELECT id, name, from_where FROM characters LIMIT %s OFFSET %s", (limit, offset))
         rows = cursor.fetchall()
 
         serialized_characters = []

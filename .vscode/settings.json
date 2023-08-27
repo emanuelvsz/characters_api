@@ -1,0 +1,24 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "db",
+            "database": "gleitos",
+            "username": "gleitos",
+            "password": "12345678"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "db",
+            "database": "default_database",
+            "username": "postgres",
+            "password": "12345678"
+        }
+    ]
+}
