@@ -5,6 +5,10 @@ from src.infra.controllers.controllers import getCharacters, getCharacterByID, c
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/', methods=['GET'])
+def handleMainRoute():
+    return "Bem-vindo à rota principal!"
+
 @app.route('/characters', methods=['GET'])
 def handleGetCharacters():
     return getCharacters()
@@ -26,4 +30,4 @@ def handleDeleteCharacter(id):
     return deleteCharacter(id)
 
 if __name__ == '__main__':
-    app.run(port=5010, host='localhost', debug=True)
+    app.run(port=8001, host='localhost', debug=True)
